@@ -1,13 +1,13 @@
 logs:
     dir_logs: logs/vizwiz/
 annotations:
-    dir: ../data_vizwiz/Annotations
+    dir: Annotations
     top_ans: 3000
     max_length: 26
     min_count_word: 0
     path_vocabs: ./prepro_data/vocabs.json
 images:
-    dir: ../data_vizwiz/Images
+    dir: Images
     arch: ResNet152
     mode: att
     img_size: 448
