@@ -13,6 +13,13 @@ import models
 import utils
 from datasets import vqa_dataset
 
+if torch.cuda.is_available():
+    dev = torch.cuda.device(torch.cuda.current_device())
+else:
+    import torch_xla
+    import torch_xla.core.xla_model as xm
+    dev = xm.xla_device()
+
 
 def train(model, loader, optimizer, tracker, epoch, split):
     model.train()
@@ -21,7 +28,7 @@ def train(model, loader, optimizer, tracker, epoch, split):
     tq = tqdm(loader, desc='{} E{:03d}'.format(split, epoch), ncols=0)
     loss_tracker = tracker.track('{}_loss'.format(split), tracker_class(**tracker_params))
     acc_tracker = tracker.track('{}_acc'.format(split), tracker_class(**tracker_params))
-    log_softmax = nn.LogSoftmax(dim=1).cuda()
+    log_softmax = nn.LogSoftmax(dim=1).to(dev)
 
     for item in tq:
         v = item['visual']
@@ -29,10 +36,10 @@ def train(model, loader, optimizer, tracker, epoch, split):
         a = item['answer']
         q_length = item['q_length']
 
-        v = Variable(v.cuda(async=True))
-        q = Variable(q.cuda(async=True))
-        a = Variable(a.cuda(async=True))
-        q_length = Variable(q_length.cuda(async=True))
+        v = Variable(v.to(dev))
+        q = Variable(q.to(dev))
+        a = Variable(a.to(dev))
+        q_length = Variable(q_length.to(dev))
 
         out = model(v, q, q_length)
 
@@ -45,7 +52,7 @@ def train(model, loader, optimizer, tracker, epoch, split):
 
         optimizer.zero_grad()
         loss.backward()
-        optimizer.step()
+        xm.optimizer_step(optimizer, barrier=True)
 
         loss_tracker.append(loss.item())
         acc_tracker.append(acc.mean())
@@ -64,7 +71,7 @@ def evaluate(model, loader, tracker, epoch, split):
     tq = tqdm(loader, desc='{} E{:03d}'.format(split, epoch), ncols=0)
     loss_tracker = tracker.track('{}_loss'.format(split), tracker_class(**tracker_params))
     acc_tracker = tracker.track('{}_acc'.format(split), tracker_class(**tracker_params))
-    log_softmax = nn.LogSoftmax(dim=1).cuda()
+    log_softmax = nn.LogSoftmax(dim=1).to
 
     with torch.no_grad():
         for item in tq:
@@ -74,10 +81,10 @@ def evaluate(model, loader, tracker, epoch, split):
             sample_id = item['sample_id']
             q_length = item['q_length']
 
-            v = Variable(v.cuda(async=True))
-            q = Variable(q.cuda(async=True))
-            a = Variable(a.cuda(async=True))
-            q_length = Variable(q_length.cuda(async=True))
+            v = Variable(v.to(dev))
+            q = Variable(q.to(dev))
+            a = Variable(a.to(dev))
+            q_length = Variable(q_length.to(dev))
 
             out = model(v, q, q_length)
 
@@ -142,7 +149,7 @@ def main():
     train_loader = vqa_dataset.get_loader(config, split='train')
     val_loader = vqa_dataset.get_loader(config, split='val')
 
-    model = nn.DataParallel(models.Model(config, train_loader.dataset.num_tokens)).cuda()
+    model = models.Model(config, train_loader.dataset.num_tokens).to(dev)
 
     optimizer = torch.optim.Adam(filter(lambda p: p.requires_grad, model.parameters()),
                                  config['training']['lr'])

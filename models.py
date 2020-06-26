@@ -5,6 +5,13 @@ import torch.nn.init as init
 from torch.nn.utils.rnn import pack_padded_sequence
 
 
+if torch.cuda.is_available():
+    dev = torch.cuda.device(torch.cuda.current_device())
+else:
+    import torch_xla
+    import torch_xla.core.xla_model as xm
+    dev = xm.xla_device()
+
 class Model(nn.Module):
     """
     References :
@@ -98,7 +105,8 @@ class TextEncoder(nn.Module):
         embedded = self.embedding(q)
         tanhed = self.tanh(self.dropout(embedded))
         # pack to feed to the LSTM
-        packed = pack_padded_sequence(tanhed, q_len, batch_first=True)
+        packed = pack_padded_sequence(tanhed.cpu(), q_len, batch_first=True)
+        packed = packed.to(dev)
         _, (_, c) = self.lstm(packed)
         # _, (c, _) = self.lstm(packed) # this is h
         return c.squeeze(0)

@@ -14,6 +14,13 @@ from tqdm import tqdm
 from datasets.images import ImageDataset, get_transform
 
 
+if torch.cuda.is_available():
+    dev = torch.cuda.device(torch.cuda.current_device())
+else:
+    import torch_xla
+    import torch_xla.core.xla_model as xm
+    dev = xm.xla_device()
+
 class NetFeatureExtractor(nn.Module):
 
     def __init__(self):
@@ -55,8 +62,7 @@ def main():
 
     # Benchmark mode is good whenever your input sizes for your network do not vary
     cudnn.benchmark = True
-
-    net = NetFeatureExtractor().cuda()
+    net = NetFeatureExtractor().to(dev)
     net.eval()
     # Resize, Crop, Normalize
     transform = get_transform(config['img_size'])
@@ -72,7 +78,8 @@ def main():
 
     h5_file = h5py.File(config['path_features'], 'w')
 
-    dummy_input = Variable(torch.ones(1, 3, config['img_size'], config['img_size']), volatile=True).cuda()
+    
+    dummy_input = Variable(torch.ones(1, 3, config['img_size'], config['img_size']), volatile=True).to(dev)
     _, dummy_output = net(dummy_input)
 
     att_features_shape = (
@@ -102,7 +109,7 @@ def main():
     delta = config['preprocess_batch_size']
 
     for i, inputs in enumerate(tqdm(data_loader)):
-        inputs_img = Variable(inputs['visual'].cuda(async=True), volatile=True)
+        inputs_img = Variable(inputs['visual'].to(dev))
         no_att_feat, att_feat = net(inputs_img)
 
         # reshape (batch_size, 2048)

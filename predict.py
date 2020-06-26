@@ -13,6 +13,12 @@ from tqdm import tqdm
 import models
 from datasets import vqa_dataset
 
+if torch.cuda.is_available():
+    dev = torch.cuda.device(torch.cuda.current_device())
+else:
+    import torch_xla
+    import torch_xla.core.xla_model as xm
+    dev = xm.xla_device()
 
 def predict_answers(model, loader, split):
     model.eval()
@@ -29,9 +35,9 @@ def predict_answers(model, loader, split):
         sample_id = item['sample_id']
         q_length = item['q_length']
 
-        v = Variable(v.cuda(async=True))
-        q = Variable(q.cuda(async=True))
-        q_length = Variable(q_length.cuda(async=True))
+        v = Variable(v.to(dev))
+        q = Variable(q.to(dev))
+        q_length = Variable(q_length.to(dev))
 
         out = model(v, q, q_length)
 
@@ -109,7 +115,7 @@ def main():
     # Use the same configuration used during training
     train_config = log['config']
 
-    model = nn.DataParallel(models.Model(train_config, num_tokens)).cuda()
+    model = models.Model(train_config, num_tokens).to(dev)
 
     dict_weights = log['weights']
     model.load_state_dict(dict_weights)
