@@ -71,7 +71,7 @@ def evaluate(model, loader, tracker, epoch, split):
     tq = tqdm(loader, desc='{} E{:03d}'.format(split, epoch), ncols=0)
     loss_tracker = tracker.track('{}_loss'.format(split), tracker_class(**tracker_params))
     acc_tracker = tracker.track('{}_acc'.format(split), tracker_class(**tracker_params))
-    log_softmax = nn.LogSoftmax(dim=1).to
+    log_softmax = nn.LogSoftmax(dim=1).to(dev)
 
     with torch.no_grad():
         for item in tq:
