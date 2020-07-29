@@ -188,11 +188,11 @@ def main():
 
             # save logs for min validation loss and max validation accuracy
             if eval_results['avg_loss'] < min_loss:
-                torch.save(log_data, path_best_loss)  # save model
+#                 torch.save(log_data, path_best_loss)  # save model
                 min_loss = eval_results['avg_loss']  # update min loss value
 
             if eval_results['avg_accuracy'] > max_accuracy:
-                torch.save(log_data, path_best_accuracy)  # save model
+#                 torch.save(log_data, path_best_accuracy)  # save model
                 max_accuracy = eval_results['avg_accuracy']  # update max accuracy value
 
     # Save final model
