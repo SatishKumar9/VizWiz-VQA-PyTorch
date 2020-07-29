@@ -76,7 +76,7 @@ python predict.py
 - https://github.com/Cadene/vqa.pytorch
 - https://github.com/GT-Vision-Lab/VQA_LSTM_CNN
 - https://github.com/Cyanogenoid/pytorch-vqa
-
+- https://github.com/DenisDsh/VizWiz-VQA-PyTorch
 
 
 [0]: http://vizwiz.org/data/
@@ -84,4 +84,4 @@ python predict.py
 [2]: https://arxiv.org/pdf/1511.02274
 [3]: https://arxiv.org/abs/1708.00584
 [4]: https://arxiv.org/pdf/1505.00468v6.pdf
-
+[5]: https://github.com/DenisDsh/VizWiz-VQA-PyTorch
