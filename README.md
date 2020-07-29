@@ -1,6 +1,6 @@
 # VizWiz Visual Question Answering Implementation in PyTorch
 
-PyTorch VQA implementation.
+PyTorch VQA implementation with TPU runtime preferably for Google Colab. (Note: not GPU based implementation)
 The code can be easily adapted for training on VQA 1.0/2.0 or any other dataset.
 
 The implemented architecture is a variant of the VQA model described in [Kazemi et al. (2017). Show, Ask, Attend, and Answer: A Strong Baseline For Visual Question Answering][1].
