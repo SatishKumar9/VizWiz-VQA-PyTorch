@@ -8,11 +8,6 @@ Visual feature are extracted using a pretrained (on ImageNet) ResNet-152. Input 
 Image features and encoded questions are combined and used to compute multiple attention maps over image features. The attended image features 
 and the encoded questions are concatenated and finally fed to a 2-layer classifier that outputs probabilities over the answers (classes). 
 
-
-In order to consider all 10 answers given by the annotators we exploit a [Soft Cross-Entropy loss][3] : 
-a weighted average of the negative log-probabilities of each unique ground-truth answer.
-This loss function better aligns to the [VQA evaluation metric][4] used to evaluate the challenge submissions.
-
 ![Soft cross-entropy loss](./soft.png)
 
 
