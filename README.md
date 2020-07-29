@@ -39,7 +39,6 @@ wget https://ivc.ischool.utexas.edu//VizWiz_final/images/train.zip
 unzip train.zip
 ```
 Similary for val, test and annotation zip files. 
-```
 
 - Set the paths to the downloaded data in the yaml configuration file `config/default.yaml`.
 
