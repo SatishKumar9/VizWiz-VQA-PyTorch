@@ -1,4 +1,4 @@
-# VizWiz Challenge: Visual Question Answering Implementation in PyTorch
+# VizWiz Visual Question Answering Implementation in PyTorch
 
 PyTorch VQA implementation.
 The code can be easily adapted for training on VQA 1.0/2.0 or any other dataset.
