@@ -1,14 +1,12 @@
 # VizWiz Challenge: Visual Question Answering Implementation in PyTorch
 
-PyTorch VQA implementation that achieved top performances in the (ECCV18) [VizWiz Grand Challenge: Answering Visual Questions from Blind People][0].
+PyTorch VQA implementation.
 The code can be easily adapted for training on VQA 1.0/2.0 or any other dataset.
 
 The implemented architecture is a variant of the VQA model described in [Kazemi et al. (2017). Show, Ask, Attend, and Answer: A Strong Baseline For Visual Question Answering][1].
 Visual feature are extracted using a pretrained (on ImageNet) ResNet-152. Input Questions are tokenized, embedded and encoded with an LSTM.
 Image features and encoded questions are combined and used to compute multiple attention maps over image features. The attended image features 
 and the encoded questions are concatenated and finally fed to a 2-layer classifier that outputs probabilities over the answers (classes). 
-
-More information about the attention module can be found in [Yang et al. (2015). Stacked Attention Networks for Image Question Answering][2].
 
 
 In order to consider all 10 answers given by the annotators we exploit a [Soft Cross-Entropy loss][3] : 
@@ -22,8 +20,8 @@ This loss function better aligns to the [VQA evaluation metric][4] used to evalu
 
 | method       | accuracy |
 |--------------|----------|
-| [VizWiz Paper][0] | 0.475    |
-| **Ours**         | **0.516**    |
+| baseline     | 0.516    |
+| **Ours**         | **0.446**    |
 
 
 ## Training and Evaluation
@@ -37,13 +35,10 @@ pip install -r requirements.txt
 - Download and extract the [VizWiz dataset][0]
 
 ```
-wget https://ivc.ischool.utexas.edu/VizWiz/data/VizWiz_data_ver1.tar.gz
-tar -xzf VizWiz_data_ver1.tar.gz
+wget https://ivc.ischool.utexas.edu//VizWiz_final/images/train.zip
+unzip train.zip
 ```
-After unpacking the dataset, the Image folder will contain files with prefix `._VizWiz`.
-Those files should be removed before extracting the image features:
-```
-rm ._*
+Similary for val, test and annotation zip files. 
 ```
 
 - Set the paths to the downloaded data in the yaml configuration file `config/default.yaml`.
